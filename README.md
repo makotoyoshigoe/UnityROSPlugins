@@ -21,7 +21,7 @@ Ubuntu20.04
    - https://github.com/Unity-Technologies/URDF-Importer.git?path=/com.unity.robotics.urdf-importer#v0.5.2
    - https://github.com/Field-Robotics-Japan/UnitySensorsROS.git
    - https://github.com/Field-Robotics-Japan/UnitySensors.git
-   - https://github.com/makotoyoshigoe/UnityROSPlugins.git?path=/Packages/UnityROSPlugins
+   - https://github.com/makotoyoshigoe/UnityROSPlugins.git
 # ライセンスについて
 このリポジトリには[Apache-2.0 license](https://github.com/makotoyoshigoe/UnityROSPlugins/blob/master/LICENSE.md)が適用されています.
 
