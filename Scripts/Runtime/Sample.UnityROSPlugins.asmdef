@@ -1,5 +1,5 @@
 {
-    "name": "Sample.UnityROSPlugins.",
+    "name": "Sample.UnityROSPlugins",
     "rootNamespace": "Sample.UnityROSPlugins",
     "references": [
         "Unity.Robotics.UrdfImporter",
