@@ -10,7 +10,7 @@ namespace Sample.UnityROSPlugins
     public class TfPublisher : MonoBehaviour
     {
         public List<GameObject> publishTfObjects;
-        private List<Transform> publishTfTransforms = new List<Transform>();
+        private List<Transform> publishTfTransforms;
         private TfMsg tfMsg = new TfMsg();
         private List<TfStampMsg> tfStampMsgList;
         public GameObject ROSConnectionCommon;
@@ -27,6 +27,7 @@ namespace Sample.UnityROSPlugins
         }
 
         public void AttachedCommponent(){
+            publishTfTransforms = new List<Transform>();
             tfStampMsgList = new List<TfStampMsg>();
             foreach(GameObject gameObject in publishTfObjects){
                 TfStampMsg tfStampMsg = new TfStampMsg();

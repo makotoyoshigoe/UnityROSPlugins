@@ -46,6 +46,7 @@ namespace Sample.UnityROSPlugins
                 tfPublisher.ROSConnectionCommon = ROSConnectionCommon;
                 tfPublisher.publishBySelf = false;
                 // GameObject tfObj = publishOdomObject;
+                tfPublisher.publishTfObjects = new List<GameObject>();
                 tfPublisher.publishTfObjects.Add(publishOdomObject);
                 index = tfPublisher.publishTfObjects.Count-1;
                 tfPublisher.AttachedCommponent();
