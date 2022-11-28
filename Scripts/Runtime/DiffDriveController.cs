@@ -42,7 +42,7 @@ namespace Sample.UnityROSPlugins
             SetParameters(wA2);
             ros = ROSConnection.GetOrCreateInstance();
             ros.Subscribe<TwistMsg>(cmdVelTopicName, ReceiveROSCmd);
-            Debug.Log("Setup end");
+            // Debug.Log("Setup end");
         }
 
         void ReceiveROSCmd(TwistMsg cmdVel)

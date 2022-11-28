@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using Unity.Robotics.ROSTCPConnector;
 using OdomMsg = RosMessageTypes.Nav.OdometryMsg;
-using TfMsg = RosMessageTypes.Tf2.TFMessageMsg;
 
 namespace Sample.UnityROSPlugins
 {
@@ -13,9 +12,8 @@ namespace Sample.UnityROSPlugins
         private Transform publishOdomTransform;
         private ArticulationBody publishOdomArticulationBody;
         public string odometryTopicName = "odom";
-        private ROSConnection ros;
         private OdomMsg odomMsg;
-        private Commons common;
+        private Commons commons;
         public GameObject ROSConnectionCommon;
         public enum TranslateDirection{
             x, y, z
@@ -27,31 +25,48 @@ namespace Sample.UnityROSPlugins
         public TranslateDirection translateDirection = TranslateDirection.x;
         public RotateAxis rotateAxis = RotateAxis.y;
         public bool publishTf = true;
-        public string tfTopicName = "tf";
+        private TfPublisher tfPublisher;
+        private int index;
         // [HideInInspector] public OdometryPublisher Setting = new OdometryPublisher();
 
         // Start is called before the first frame update
+        
         void Start()
         {
-            common = ROSConnectionCommon.GetComponent<Commons>();
+            commons = ROSConnectionCommon.GetComponent<Commons>();
             publishOdomTransform = publishOdomObject.GetComponent<Transform>();
             publishOdomArticulationBody = publishOdomObject.GetComponent<ArticulationBody>();
-            ros = ROSConnection.GetOrCreateInstance();
-            ros.RegisterPublisher<OdomMsg>(odometryTopicName, 1);
+            commons.ros.RegisterPublisher<OdomMsg>(odometryTopicName, 1);
             odomMsg = new OdomMsg();
             odomMsg.header.frame_id = odometryTopicName;
             odomMsg.child_frame_id = publishOdomObject.name;
+            if(publishTf){
+                gameObject.AddComponent<TfPublisher>();
+                tfPublisher = gameObject.GetComponent<TfPublisher>();
+                tfPublisher.ROSConnectionCommon = ROSConnectionCommon;
+                tfPublisher.publishBySelf = false;
+                // GameObject tfObj = publishOdomObject;
+                tfPublisher.publishTfObjects.Add(publishOdomObject);
+                index = tfPublisher.publishTfObjects.Count-1;
+                tfPublisher.AttachedCommponent();
+            }
             // Debug.Log(publishOdomObject.name);
         }
 
         // Update is called once per frame
         void FixedUpdate()
         {
-            Debug.Log(translateDirection);
-            common.SetTime(odomMsg.header.stamp);
-            common.SetPose(odomMsg.pose.pose, publishOdomTransform);
-            common.SetTwist(odomMsg.twist.twist, publishOdomArticulationBody);
-            ros.Publish(odometryTopicName, odomMsg);
+            commons.SetTime(odomMsg.header.stamp);
+            commons.SetPose(odomMsg.pose.pose, publishOdomTransform);
+            commons.SetTwist(odomMsg.twist.twist, publishOdomArticulationBody);
+            // if(publishTf){
+            //     // Debug.Log
+            //     // tfPublisher.tfStampMsgList[index].header.stamp = odomMsg.header.stamp;
+            //     tfPublisher.SetTfMsg();
+            //     tfPublisher.PublishMsg();
+            // }
+            commons.ros.Publish(odometryTopicName, odomMsg);
+            
         }
     }
 }
