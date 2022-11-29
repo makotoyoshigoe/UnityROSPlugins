@@ -35,20 +35,57 @@ namespace Sample.UnityROSPlugins
         // Update is called once per frame
         void FixedUpdate()
         {
-            // commons.SetTime(jointStateMsg.header.stamp);
-            // commons.ros.Publish(topicName, jointStateMsg);
-            GetJointPosition(jointStatePublishArticulationBodys);
+            commons.SetTime(jointStateMsg.header.stamp);
+            SetJointStates();
+            commons.ros.Publish(topicName, jointStateMsg);
         }
 
-        void GetJointPosition(List<ArticulationBody> articulationBodies){
+        double[] GetJointPosition(List<ArticulationBody> articulationBodies){
+            List<double> jointPositions = new List<double>();
             foreach(ArticulationBody articulationBody in articulationBodies){
-                List<float> floats = new List<float>();
-                articulationBody.GetJointPositions(floats);
-                // Debug.Log($"{articulationBody.name}: {floats.Count}");
-                // foreach(float f in floats){
-                Debug.Log($"{articulationBody.name}: {floats[floats.Count-3]}");
+                List<float> positions = new List<float>();
+                articulationBody.GetJointPositions(positions);
+                jointPositions.Add(positions[positions.Count-1]);
+                // Debug.Log($"{articulationBody.name}: {doubles.Count}");
+                // foreach(double f in doubles){
+                // Debug.Log($"{articulationBody.name}: {positions[positions.Count-1]}");
                 // }
             }
+            return jointPositions.ToArray();
+        }
+
+        double[] GetJointVelocity(List<ArticulationBody> articulationBodies){
+            List<double> jointVelocities = new List<double>();
+            foreach(ArticulationBody articulationBody in articulationBodies){
+                List<float> velocities = new List<float>();
+                articulationBody.GetJointVelocities(velocities);
+                jointVelocities.Add(velocities[velocities.Count-1]);
+                // Debug.Log($"{articulationBody.name}: {doubles.Count}");
+                // foreach(double f in doubles){
+                // Debug.Log($"{articulationBody.name}: {positions[positions.Count-1]}");
+                // }
+            }
+            return jointVelocities.ToArray();
+        }
+
+        double[] GetJointForce(List<ArticulationBody> articulationBodies){
+            List<double> jointForces = new List<double>();
+            foreach(ArticulationBody articulationBody in articulationBodies){
+                List<float> forces = new List<float>();
+                articulationBody.GetJointForces(forces);
+                jointForces.Add(forces[forces.Count-1]);
+                // Debug.Log($"{articulationBody.name}: {floats.Count}");
+                // foreach(float f in floats){
+                // Debug.Log($"{articulationBody.name}: {positions[positions.Count-1]}");
+                // }
+            }
+            return jointForces.ToArray();
+        }
+
+        void SetJointStates(){
+            jointStateMsg.position = GetJointPosition(jointStatePublishArticulationBodys);
+            jointStateMsg.velocity = GetJointVelocity(jointStatePublishArticulationBodys);
+            jointStateMsg.effort = GetJointForce(jointStatePublishArticulationBodys);
         }
     }
 }
