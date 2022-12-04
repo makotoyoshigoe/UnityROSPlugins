@@ -25,7 +25,8 @@ namespace Sample.UnityROSPlugins
         public float casterRadius = 0.009f;
         private float ROSTimeout = 0.5f;
         private float lastCmdReceived = 0f;
-        ROSConnection ros;
+        public GameObject ROSConnectionCommon;
+        private Commons commons;
         private RotationDirection direction;
         private float rosLinear = 0f;
         private float rosAngular = 0f;
@@ -33,6 +34,9 @@ namespace Sample.UnityROSPlugins
 
         void Start()
         {
+            commons = ROSConnectionCommon.GetComponent<Commons>();
+            commons.ros = ROSConnection.GetOrCreateInstance();
+            commons.ros.Subscribe<TwistMsg>(cmdVelTopicName, ReceiveROSCmd);
             wA1 = rightWheel.GetComponent<ArticulationBody>();
             wA2 = leftWheel.GetComponent<ArticulationBody>();
             k1 = trackWidth / 2;
@@ -40,8 +44,7 @@ namespace Sample.UnityROSPlugins
             k3 = ((2 * maxLinearSpeed) / wheelRadius) * Mathf.Rad2Deg;
             SetParameters(wA1);
             SetParameters(wA2);
-            ros = ROSConnection.GetOrCreateInstance();
-            ros.Subscribe<TwistMsg>(cmdVelTopicName, ReceiveROSCmd);
+            
             // Debug.Log("Setup end");
         }
 
@@ -56,14 +59,7 @@ namespace Sample.UnityROSPlugins
 
         void FixedUpdate()
         {
-            if (mode == ControlMode.Keyboard)
-            {
-                KeyBoardUpdate();
-            }
-            else if (mode == ControlMode.ROS)
-            {
-                ROSUpdate();
-            }
+            ROSUpdate();
         }
 
         private void SetParameters(ArticulationBody joint)
@@ -134,11 +130,11 @@ namespace Sample.UnityROSPlugins
 
         private void ROSUpdate()
         {
-            if (Time.time - lastCmdReceived > ROSTimeout)
-            {
-                rosLinear = 0f;
-                rosAngular = 0f;
-            }
+            // if (Time.time - lastCmdReceived > ROSTimeout)
+            // {
+            //     rosLinear = 0f;
+            //     rosAngular = 0f;
+            // }
             RobotInput(rosLinear, -rosAngular);
         }
 
