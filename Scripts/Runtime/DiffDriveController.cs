@@ -10,10 +10,8 @@ namespace Sample.UnityROSPlugins
     public class DiffDriveController : MonoBehaviour
     {
         public string cmdVelTopicName = "sim_cmd_vel";
-        public enum ControlMode { Keyboard, ROS };
         public GameObject rightWheel;
         public GameObject leftWheel;
-        public ControlMode mode = ControlMode.ROS;
         private ArticulationBody wA1;
         private ArticulationBody wA2;
         public float maxLinearSpeed = 0.5f; //  m/s
@@ -22,8 +20,6 @@ namespace Sample.UnityROSPlugins
         public float trackWidth = 0.27918f; // meters Distance between tyres
         public float forceLimit = 657f;
         public float damping = 10;
-        public float casterRadius = 0.009f;
-        private float ROSTimeout = 0.5f;
         private float lastCmdReceived = 0f;
         public GameObject ROSConnectionCommon;
         private Commons commons;
@@ -45,15 +41,12 @@ namespace Sample.UnityROSPlugins
             SetParameters(wA1);
             SetParameters(wA2);
             
-            // Debug.Log("Setup end");
         }
 
         void ReceiveROSCmd(TwistMsg cmdVel)
         {
             rosLinear = (float)cmdVel.linear.x;
             rosAngular = (float)cmdVel.angular.z;
-            // Debug.Log(rosLinear);
-            // Debug.Log(rosAngular);
             lastCmdReceived = Time.time;
         }
 
@@ -77,12 +70,10 @@ namespace Sample.UnityROSPlugins
             {
                 Debug.Log("NaN");
                 drive.targetVelocity = k3 * (int)direction;
-                //Debug.Log("speed: "+drive.targetVelocity);
             }
             else
             {
                 drive.targetVelocity = wheelSpeed;
-                //Debug.Log("speed: " + wheelSpeed);
             }
             joint.xDrive = drive;
         }
@@ -90,11 +81,6 @@ namespace Sample.UnityROSPlugins
 
         private void ROSUpdate()
         {
-            // if (Time.time - lastCmdReceived > ROSTimeout)
-            // {
-            //     rosLinear = 0f;
-            //     rosAngular = 0f;
-            // }
             RobotInput(rosLinear, -rosAngular);
         }
 
@@ -104,7 +90,6 @@ namespace Sample.UnityROSPlugins
             if (rotSpeed > maxRotationalSpeed) rotSpeed = maxRotationalSpeed;
             float rightRotation = (speed - k1 * rotSpeed) * k2;
             float leftRotation = (k1 * rotSpeed + speed) * k2;
-            // Debug.Log($"dps={rightRotation}, {leftRotation}");
 
             SetSpeed(wA1, rightRotation); // articulation object(wheel), angular velocity(deg/s)
             SetSpeed(wA2, leftRotation);

@@ -12,26 +12,14 @@ namespace Sample.UnityROSPlugins
         public GameObject publishOdomObject;
         private Transform publishOdomTransform;
         private ArticulationBody publishOdomArticulationBody;
-        public string odometryTopicName = "odom";
-        public string tfTopicName = "tf";
+        public string odometryTopicName = "odom", tfTopicName = "tf";
         private OdomMsg odomMsg;
         private TfStampMsg tfStampMsg = new TfStampMsg();
         private TfMsg tfMsg = new TfMsg();
         private List<TfStampMsg> tfStampMsgList;
         private Commons commons;
         public GameObject ROSConnectionCommon;
-        public enum TranslateDirection{
-            x, y, z
-        }
-        public enum RotateAxis{
-            x, y, z
-        }
-
-        public TranslateDirection translateDirection = TranslateDirection.x;
-        public RotateAxis rotateAxis = RotateAxis.y;
         public bool publishTf = true;
-        private TfPublisher tfPublisher;
-        private int index;
         private float time;
 
         // Start is called before the first frame update

@@ -18,7 +18,6 @@ namespace Sample.UnityROSPlugins
         private Commons commons;
         private string tfTopicName = "tf";
         public string BaseLinkFrameId = "odom";
-        [HideInInspector] public bool publishBySelf = true;
         private float time;
         private ROSConnection ros;
         // Start is called before the first frame update
@@ -53,6 +52,10 @@ namespace Sample.UnityROSPlugins
         // Update is called once per frame
         void FixedUpdate()
         {
+            time += Time.deltaTime;
+            if(time < commons.hz2t) return;
+            time = 0;
+
             commons.SetTime(tfMsg.transforms[0].header.stamp);
             commons.SetTranslationAndRotation(tfMsg.transforms[0].transform, baseLinkArticulationBodies[0].transform);
 
