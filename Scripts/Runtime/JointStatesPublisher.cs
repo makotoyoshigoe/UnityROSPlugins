@@ -1,8 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Unity.Robotics.ROSTCPConnector;
-using Unity.Robotics;
 using JointStateMsg = RosMessageTypes.Sensor.JointStateMsg;
 
 namespace Sample.UnityROSPlugins
@@ -22,12 +20,13 @@ namespace Sample.UnityROSPlugins
         private List<int> indexes;
         private List<string> names;
         private int startJointIndex;
+        private float time;
 
         // Start is called before the first frame update
         void Start()
         {
             commons = ROSConnectionCommon.GetComponent<Commons>();
-            commons.ros.RegisterPublisher<JointStateMsg>(topicName, 1);
+            commons.ros.RegisterPublisher<JointStateMsg>(topicName, commons.queueSize);
 
             robotModelArticulationBody = robotBaseLink.GetComponent<ArticulationBody>();
             robotPartArticulationBody = robotModelArticulationBody.GetComponentsInChildren<ArticulationBody>();
@@ -75,11 +74,15 @@ namespace Sample.UnityROSPlugins
         // Update is called once per frame
         void FixedUpdate()
         {
+            time += Time.deltaTime;
+            if(time < commons.hz2t) return;
+            time = 0;
+            
             commons.SetTime(jointStateMsg.header.stamp);
 
             robotModelArticulationBody.GetJointPositions(positions);
-            robotModelArticulationBody.GetJointPositions(velocities);
-            robotModelArticulationBody.GetJointPositions(efforts);
+            robotModelArticulationBody.GetJointVelocities(velocities);
+            robotModelArticulationBody.GetJointForces(efforts);
 
             for(int i=startJointIndex; i<positions.Count; ++i){
                 int index = i-startJointIndex;

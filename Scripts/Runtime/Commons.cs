@@ -14,22 +14,28 @@ namespace Sample.UnityROSPlugins
     {
         [HideInInspector] public ROSConnection ros;
         private string topicName = "clock";
-        [HideInInspector] public bool setupFinish = false;
-        private ClockMsg clockMsg;
+        private ClockMsg clockMsg = new ClockMsg();
+        public int queueSize = 5;
+        public float publishFrequency = 60;
+        [HideInInspector] public float hz2t;
+        private float time;
         // Start is called before the first frame update
 
         private void Awake(){
             ros = ROSConnection.GetOrCreateInstance();
-            ros.RegisterPublisher<ClockMsg>(topicName);
+            ros.RegisterPublisher<ClockMsg>(topicName, queueSize);
+            hz2t = 1 / publishFrequency;
         }
 
         void Start()
         {
-            Debug.Log("created instance");
-            clockMsg = new ClockMsg();
         }
 
         void FixedUpdate(){
+            time += Time.deltaTime;
+            if(time < hz2t) return;
+            time = 0;
+
             SetTime(clockMsg.clock);
             ros.Publish(topicName, clockMsg);
         }
@@ -59,14 +65,25 @@ namespace Sample.UnityROSPlugins
             twistMsg.angular.z = articulationBody.angularVelocity.magnitude;
         }
 
-        public void SetTranslationAndRotation(TransformMsg transformMsg, Transform transform){
-            transformMsg.translation.x = transform.position.z;
-            transformMsg.translation.y = -transform.position.x;
-            transformMsg.translation.z = transform.position.y;
-            transformMsg.rotation.x = transform.rotation.z;
-            transformMsg.rotation.y = -transform.rotation.x;
-            transformMsg.rotation.z = transform.rotation.y;
-            transformMsg.rotation.w = -transform.rotation.w;
+        public void SetTranslationAndRotation(TransformMsg transformMsg, Transform transform, bool isLocal = false){
+            if(!isLocal){
+                transformMsg.translation.x = transform.position.z;
+                transformMsg.translation.y = -transform.position.x;
+                transformMsg.translation.z = transform.position.y;
+                transformMsg.rotation.x = transform.rotation.z;
+                transformMsg.rotation.y = -transform.rotation.x;
+                transformMsg.rotation.z = transform.rotation.y;
+                transformMsg.rotation.w = -transform.rotation.w;
+            }else{
+                transformMsg.translation.x = transform.localPosition.z;
+                transformMsg.translation.y = -transform.localPosition.x;
+                transformMsg.translation.z = transform.localPosition.y;
+                transformMsg.rotation.x = transform.localRotation.z;
+                transformMsg.rotation.y = -transform.localRotation.x;
+                transformMsg.rotation.z = transform.localRotation.y;
+                transformMsg.rotation.w = -transform.localRotation.w;
+            }
+                
         }
     }
 }

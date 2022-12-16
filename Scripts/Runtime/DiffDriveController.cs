@@ -70,12 +70,6 @@ namespace Sample.UnityROSPlugins
             joint.xDrive = drive;
         }
 
-        private void SetParameterForCaster(WheelCollider wheel, ArticulationBody joint)
-        {
-            wheel.mass = joint.mass;
-            wheel.radius = casterRadius;
-        }
-
         private void SetSpeed(ArticulationBody joint, float wheelSpeed = float.NaN)
         {
             ArticulationDrive drive = joint.xDrive;
@@ -93,40 +87,6 @@ namespace Sample.UnityROSPlugins
             joint.xDrive = drive;
         }
 
-        private void KeyBoardUpdate()
-        {
-            float moveDirection = Input.GetAxis("Vertical");
-            float inputSpeed;
-            float inputRotationSpeed;
-            if (moveDirection > 0)
-            {
-                inputSpeed = maxLinearSpeed;
-            }
-            else if (moveDirection < 0)
-            {
-                inputSpeed = -maxLinearSpeed;
-            }
-            else
-            {
-                inputSpeed = 0;
-            }
-
-            float turnDirction = Input.GetAxis("Horizontal");
-            if (turnDirction > 0)
-            {
-                inputRotationSpeed = -maxRotationalSpeed;
-            }
-            else if (turnDirction < 0)
-            {
-                inputRotationSpeed = maxRotationalSpeed;
-            }
-            else
-            {
-                inputRotationSpeed = 0;
-            }
-            RobotInput(inputSpeed, inputRotationSpeed);
-        }
-
 
         private void ROSUpdate()
         {
@@ -142,8 +102,8 @@ namespace Sample.UnityROSPlugins
         {
             if (speed > maxLinearSpeed) speed = maxLinearSpeed;
             if (rotSpeed > maxRotationalSpeed) rotSpeed = maxRotationalSpeed;
-            float rightRotation = (k1 * rotSpeed + speed) * k2;
-            float leftRotation = (speed - k1 * rotSpeed) * k2;
+            float rightRotation = (speed - k1 * rotSpeed) * k2;
+            float leftRotation = (k1 * rotSpeed + speed) * k2;
             // Debug.Log($"dps={rightRotation}, {leftRotation}");
 
             SetSpeed(wA1, rightRotation); // articulation object(wheel), angular velocity(deg/s)
