@@ -91,8 +91,8 @@ namespace Sample.UnityROSPlugins
             float rightRotation = (speed - k1 * rotSpeed) * k2;
             float leftRotation = (k1 * rotSpeed + speed) * k2;
 
-            SetSpeed(wA1, rightRotation*1.25f); // articulation object(wheel), angular velocity(deg/s)
-            SetSpeed(wA2, leftRotation*1.25f);
+            SetSpeed(wA1, rightRotation); // articulation object(wheel), angular velocity(deg/s)
+            SetSpeed(wA2, leftRotation);
         }
     }
 }
