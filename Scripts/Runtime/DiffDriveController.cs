@@ -86,8 +86,6 @@ namespace Sample.UnityROSPlugins
 
         private void RobotInput(float speed, float rotSpeed) // m/s and rad/s
         {
-            if (speed > maxLinearSpeed) speed = maxLinearSpeed;
-            if (rotSpeed > maxRotationalSpeed) rotSpeed = maxRotationalSpeed;
             float rightRotation = (speed - k1 * rotSpeed) * k2;
             float leftRotation = (k1 * rotSpeed + speed) * k2;
 
