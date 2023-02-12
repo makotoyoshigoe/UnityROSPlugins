@@ -10,12 +10,10 @@ namespace Sample.UnityROSPlugins
     public class DiffDriveController : MonoBehaviour
     {
         public string cmdVelTopicName = "sim_cmd_vel";
-        public GameObject rightWheel;
-        public GameObject leftWheel;
-        private ArticulationBody wA1;
-        private ArticulationBody wA2;
-        public float maxLinearSpeed = 0.5f; //  m/s
-        public float maxRotationalSpeed = 2.84f;//
+        public GameObject rightWheel, leftWheel;
+        private ArticulationBody rightWheelArticulationBody, leftWheelArticulationBody;
+        private float rightRotation, leftRotation;
+        private float preRightRotation = 0.0f, preLeftRotation = 0.0f;
         public float wheelRadius = 0.0762f; //meters
         public float trackWidth = 0.27918f; // meters Distance between tyres
         public float forceLimit = 657f;
@@ -26,21 +24,19 @@ namespace Sample.UnityROSPlugins
         private RotationDirection direction;
         private float rosLinear = 0f;
         private float rosAngular = 0f;
-        private float k1, k2, k3;
+        private float k1, k2;
 
         void Start()
         {
             commons = ROSConnectionCommon.GetComponent<Commons>();
             commons.ros = ROSConnection.GetOrCreateInstance();
             commons.ros.Subscribe<TwistMsg>(cmdVelTopicName, ReceiveROSCmd);
-            wA1 = rightWheel.GetComponent<ArticulationBody>();
-            wA2 = leftWheel.GetComponent<ArticulationBody>();
+            rightWheelArticulationBody = rightWheel.GetComponent<ArticulationBody>();
+            leftWheelArticulationBody = leftWheel.GetComponent<ArticulationBody>();
             k1 = trackWidth / 2;
             k2 = Mathf.Rad2Deg / wheelRadius;
-            k3 = ((2 * maxLinearSpeed) / wheelRadius) * Mathf.Rad2Deg;
-            SetParameters(wA1);
-            SetParameters(wA2);
-            
+            SetParameters(rightWheelArticulationBody);
+            SetParameters(leftWheelArticulationBody);
         }
 
         void ReceiveROSCmd(TwistMsg cmdVel)
@@ -63,18 +59,10 @@ namespace Sample.UnityROSPlugins
             joint.xDrive = drive;
         }
 
-        private void SetSpeed(ArticulationBody joint, float wheelSpeed = float.NaN)
+        private void SetSpeed(ArticulationBody joint, float wheelSpeed = float.NaN, float preWheelSpeed = float.NaN)
         {
             ArticulationDrive drive = joint.xDrive;
-            if (float.IsNaN(wheelSpeed))
-            {
-                Debug.Log("NaN");
-                drive.targetVelocity = k3 * (int)direction;
-            }
-            else
-            {
-                drive.targetVelocity = wheelSpeed;
-            }
+            drive.targetVelocity = float.IsNaN(wheelSpeed) ? preWheelSpeed : wheelSpeed;
             joint.xDrive = drive;
         }
 
@@ -86,11 +74,14 @@ namespace Sample.UnityROSPlugins
 
         private void RobotInput(float speed, float rotSpeed) // m/s and rad/s
         {
-            float rightRotation = (speed - k1 * rotSpeed) * k2;
-            float leftRotation = (k1 * rotSpeed + speed) * k2;
+            preRightRotation = rightRotation;
+            preLeftRotation = leftRotation;
 
-            SetSpeed(wA1, rightRotation); // articulation object(wheel), angular velocity(deg/s)
-            SetSpeed(wA2, leftRotation);
+            rightRotation = (speed - k1 * rotSpeed) * k2;
+            leftRotation = (k1 * rotSpeed + speed) * k2;
+
+            SetSpeed(rightWheelArticulationBody, rightRotation, preRightRotation); // articulation object(wheel), angular velocity(deg/s)
+            SetSpeed(leftWheelArticulationBody, leftRotation, preLeftRotation);
         }
     }
 }
