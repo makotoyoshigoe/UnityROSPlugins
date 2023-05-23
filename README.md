@@ -19,8 +19,6 @@ Ubuntu20.04
 3. 入力欄に, 以下のURLを入力し, `Install`ボタンをクリックします.
    - https://github.com/Unity-Technologies/ROS-TCP-Connector.git?path=/com.unity.robotics.ros-tcp-connector
    - https://github.com/Unity-Technologies/URDF-Importer.git?path=/com.unity.robotics.urdf-importer#v0.5.2
-   - https://github.com/Field-Robotics-Japan/UnitySensorsROS.git
-   - https://github.com/Field-Robotics-Japan/UnitySensors.git
    - https://github.com/makotoyoshigoe/UnityROSPlugins.git
 # ライセンスについて
 このリポジトリには[Apache-2.0 license](https://github.com/makotoyoshigoe/UnityROSPlugins/blob/master/LICENSE.md)が適用されています.
